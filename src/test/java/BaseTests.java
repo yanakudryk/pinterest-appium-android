@@ -8,9 +8,7 @@ import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import screens.CreateServerScreen;
-import screens.RegisterScreen;
-import screens.WelcomeScreen;
+import screens.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,17 +24,26 @@ public class BaseTests {
     protected WelcomeScreen welcomeScreen;
     protected RegisterScreen registerScreen;
     protected CreateServerScreen createServerScreen;
+    protected LoginScreen loginScreen;
+    protected ChannelsMenu channelsMenu;
+    protected ChannelScreen channelScreen;
+    protected ShareLinkScreen shareLinkScreen;
 
 
     @BeforeClass
     public void setUp() throws MalformedURLException {
-        driver = getAndroidDriver();
+        driver = getEmulatorAndroidDriver();
+        //driver = getBSAndroidDriver();
         welcomeScreen = new WelcomeScreen(driver);
         registerScreen = new RegisterScreen(driver);
         createServerScreen = new CreateServerScreen(driver);
+        loginScreen = new LoginScreen(driver);
+        channelScreen = new ChannelScreen(driver);
+        channelsMenu = new ChannelsMenu(driver);
+        shareLinkScreen = new ShareLinkScreen(driver);
     }
 
-    private AndroidDriver<AndroidElement> getAndroidDriver() throws MalformedURLException {
+    private AndroidDriver<AndroidElement> getBSAndroidDriver() throws MalformedURLException {
         DesiredCapabilities caps = new DesiredCapabilities();
 
         caps.setCapability("device", "Google Pixel 3");
@@ -49,6 +56,18 @@ public class BaseTests {
        return new AndroidDriver<AndroidElement>(new URL("https://"+userName+":"+accessKey+"@hub-cloud.browserstack.com/wd/hub"), caps);
     }
 
+    private AndroidDriver<AndroidElement> getEmulatorAndroidDriver() throws MalformedURLException {
+        DesiredCapabilities caps = new DesiredCapabilities();
+
+        caps.setCapability("avd", "Pixel_3_API_29");
+        caps.setCapability("deviceName","Pixel 3 API 29");
+        caps.setCapability("platformVersion","10.0");
+        caps.setCapability("platformName", "Android");
+        caps.setCapability("appPackage", "com.discord");
+        caps.setCapability("appActivity", "com.discord.app.AppActivity$Main");
+        caps.setCapability("app","C:\\Users\\akade\\IdeaProjects\\messenger-android-automation\\apk\\com.discord_23.0_1146.apk");
+        return new AndroidDriver<AndroidElement>(new URL("http://127.0.0.1:4723/wd/hub"), caps);
+    }
 
     @AfterMethod
     public void recordFailure(ITestResult result) {

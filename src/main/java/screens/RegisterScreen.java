@@ -24,8 +24,16 @@ public class RegisterScreen extends BaseScreen {
         action.inputText(username, user.username());
         action.inputText(email, user.email());
         action.inputText(password, user.password());
-        action.setCheckBox(agree, true);
-        driver.hideKeyboard();
+        if(driver.isKeyboardShown()) {
+            driver.hideKeyboard();
+        }
+        try{
+            action.setCheckBox(agree, true);
+        }
+        catch (Exception ex){
+            logger.info("Agree check box is not displayed");
+        }
+
         action.tapButton(createAccountButton);
     }
 }

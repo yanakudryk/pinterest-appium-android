@@ -19,7 +19,7 @@ public class ActionWithElements {
 
     public ActionWithElements(AndroidDriver<AndroidElement> driver){
         this.driver = driver;
-        wait = new WebDriverWait(this.driver, 20);
+        wait = new WebDriverWait(this.driver, 10);
         logger = Logger.getLogger(getClass());
     }
 

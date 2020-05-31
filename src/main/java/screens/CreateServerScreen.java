@@ -9,6 +9,8 @@ public class CreateServerScreen extends BaseScreen {
 
     @AndroidFindBy(id = "com.discord:id/nux_guild_template_section_top")
     private AndroidElement createTitle;
+    @AndroidFindBy(id = "android:id/autofill_save_no")
+    private AndroidElement notSavePassword;
     @AndroidFindBy(id = "com.discord:id/nux_guild_template_action_create")
     private AndroidElement createMyOwn;
 
@@ -28,29 +30,15 @@ public class CreateServerScreen extends BaseScreen {
     @AndroidFindBy(id = "com.discord:id/screen_title_title")
     private AndroidElement finalTitle;
 
-    @AndroidFindBy(xpath = "//android.widget.ImageButton[@content-desc=\"Close\"]")
-    private AndroidElement closeShareServerLinkScreen;
-
     public CreateServerScreen(AndroidDriver<AndroidElement> driver) {
         super(driver);
     }
 
-    public String getTitleText(){
-        return action.getText(createTitle);
-    }
 
     public void setUpServer(String topic){
         action.tapButton(createMyOwn);
         action.tapButton(continueButton);
         action.inputText(this.topic, topic);
         action.tapButton(continueButton);
-    }
-
-    public String getFinalTitle(){
-        return action.getText(finalTitle);
-    }
-
-    public void closeShareServerLinkScreen(){
-        action.tapButton(closeShareServerLinkScreen);
     }
 }
