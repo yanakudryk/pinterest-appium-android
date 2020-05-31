@@ -9,9 +9,9 @@ import static constants.Constants.EMAIL;
 import static constants.Constants.PASSWORD;
 
 
-public class RegistrationAndServerCreationTests extends BaseTests {
+public class RegistrationTests extends BaseTests {
     @Test
-    public void testRegistrationSuccessful(){
+    public void testRegistrationAndServerCreation(){
         Faker usFaker = new Faker(new Locale("en-US"));
         User user = new User(
                 usFaker.name().username(),
