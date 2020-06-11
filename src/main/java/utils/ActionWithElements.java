@@ -1,29 +1,39 @@
 package utils;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.PerformsTouchActions;
+import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
+import io.appium.java_client.touch.LongPressOptions;
+import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.PointOption;
 import org.apache.log4j.Logger;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.touch.TouchActions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.List;
 
 
 public class ActionWithElements {
-    AndroidDriver<AndroidElement> driver;
+    WebDriver driver;
     Logger logger;
     WebDriverWait wait;
 
-    public ActionWithElements(AndroidDriver<AndroidElement> driver){
+    public ActionWithElements(WebDriver driver){
         this.driver = driver;
-        wait = new WebDriverWait(this.driver, 10);
+        wait = new WebDriverWait(this.driver, 30);
         logger = Logger.getLogger(getClass());
     }
 
-    public void inputText(AndroidElement element, String text){
+    public void inputText(WebElement element, String text){
         try {
             wait.until(ExpectedConditions.visibilityOfAllElements(element));
             element.clear();
@@ -36,9 +46,9 @@ public class ActionWithElements {
         }
 
     }
-    public void tapButton(AndroidElement element){
+    public void tapButton(WebElement element){
         try{
-            wait.until(ExpectedConditions.elementToBeClickable(element));
+            wait.until(ExpectedConditions.visibilityOfAllElements(element));
             String getText = element.getText();
             element.click();
             logger.info("Successful clicking on " + getText);
@@ -48,8 +58,9 @@ public class ActionWithElements {
             logger.error("Something went wrong during clicking");
         }
 
+
     }
-    public boolean isDisplayedElement(AndroidElement element){
+    public boolean isDisplayedElement(WebElement element){
         boolean result = false;
         try{
             wait.until(ExpectedConditions.visibilityOfAllElements(element));
@@ -64,7 +75,7 @@ public class ActionWithElements {
             return result;
         }
     }
-    public void selectElementFromDropDown(AndroidElement element, String value){
+    public void selectElementFromDropDown(WebElement element, String value){
         try{
             wait.until(ExpectedConditions.visibilityOfAllElements(element));
             Select dropDownValue = new Select(element);
@@ -78,7 +89,7 @@ public class ActionWithElements {
 
     }
 
-    public void setCheckBox(AndroidElement element, Boolean state){
+    public void setCheckBox(WebElement element, Boolean state){
         try{
             wait.until(ExpectedConditions.visibilityOfAllElements(element));
             String getText = element.getText();
@@ -100,7 +111,7 @@ public class ActionWithElements {
         }
     }
 
-    public String getText(AndroidElement element){
+    public String getText(WebElement element){
         String result = null;
         try{
             wait.until(ExpectedConditions.visibilityOfAllElements(element));
@@ -114,7 +125,7 @@ public class ActionWithElements {
         return result;
     }
 
-    public boolean isElementSelected(AndroidElement element){
+    public boolean isElementSelected(WebElement element){
         boolean result = false;
         try{
             wait.until(ExpectedConditions.visibilityOfAllElements(element));
@@ -131,9 +142,10 @@ public class ActionWithElements {
         return result;
     }
 
-    public boolean isElementEnabled(AndroidElement element){
+    public boolean isElementEnabled(WebElement element){
         boolean result = false;
         try{
+            wait.until(ExpectedConditions.visibilityOfAllElements(element));
             if (element.isEnabled()){
                 result = true;
             }
@@ -144,10 +156,10 @@ public class ActionWithElements {
         }
         return result;
     }
-    public void selectRadioButton(List<AndroidElement> elements, String text){
+    public void selectRadioButton(List<WebElement> elements, String text){
         try {
-            wait.until(ExpectedConditions.visibilityOfAllElements((WebElement) elements));
-            List<AndroidElement> radioButtons = elements;
+            wait.until(ExpectedConditions.visibilityOfAllElements(elements));
+            List<WebElement> radioButtons = elements;
             int numberOfRadioButtons = radioButtons.size();
             for (int i = 0; i < numberOfRadioButtons; i++) {
                 if (radioButtons.get(i).getAttribute("value").equals(text)) {
@@ -163,4 +175,127 @@ public class ActionWithElements {
         }
 
     }
+
+    public boolean isElementDisplayed(WebElement element){
+        boolean result = false;
+        try {
+            wait.until(ExpectedConditions.visibilityOfAllElements(element));
+            result = element.isDisplayed();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            logger.error("Something went wrong during checking element displaying.");
+        }
+        return result;
+    }
+
+    public void longPressAndSelectOption(WebElement firstElement, WebElement secondElement){
+
+        try{
+            wait.until(ExpectedConditions.visibilityOfAllElements(firstElement));
+
+            TouchAction action = new TouchAction((PerformsTouchActions) driver);
+
+            PointOption firstPointOption = new PointOption();
+            firstPointOption.withCoordinates(
+                    firstElement.getLocation().getX() + firstElement.getSize().width / 2,
+                    firstElement.getLocation().getY() + firstElement.getSize().height / 2);
+            action.
+                    longPress(LongPressOptions.longPressOptions().
+                            withPosition(firstPointOption).
+                            withDuration(Duration.ofSeconds(3))).
+                    perform();
+
+            PointOption secondPointOption = new PointOption().withCoordinates(secondElement.getLocation().getX(), secondElement.getLocation().getY());
+
+            action.
+                    moveTo(secondPointOption).
+                    waitAction(WaitOptions.waitOptions(Duration.ofSeconds(3))).
+                    release().
+                    perform();
+
+            logger.info("Long press was performed successfully.");
+        }
+        catch (Exception ex){
+            logger.error("Something went wrong during long press.");
+        }
+    }
+
+    public void swipe(String direction) {
+        Dimension size = driver.manage().window().getSize();
+
+        int startX = 0;
+        int endX = 0;
+        int startY = 0;
+        int endY = 0;
+        PointOption startPoint = new PointOption();
+        PointOption movePoint = new PointOption();
+
+        switch (direction) {
+            case "RIGHT":
+                startY = (int) (size.height / 2);
+                startX = (int) (size.width * 0.90);
+                endX = (int) (size.width * 0.05);
+                startPoint.withCoordinates(startX, startY);
+                movePoint.withCoordinates(endX, startY);
+                new TouchAction((PerformsTouchActions) driver)
+                        .press(startPoint)
+                        .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(3)))
+                        .moveTo(movePoint)
+                        .release()
+                        .perform();
+                break;
+
+            case "LEFT":
+                startY = (int) (size.height / 2);
+                startX = (int) (size.width * 0.05);
+                endX = (int) (size.width * 0.90);
+                startPoint.withCoordinates(startX, startY);
+                movePoint.withCoordinates(endX, startY);
+                new TouchAction((PerformsTouchActions) driver)
+                        .press(startPoint)
+                        .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(3)))
+                        .moveTo(movePoint)
+                        .release()
+                        .perform();
+
+                break;
+
+            case "UP":
+                endY = (int) (size.height * 0.70);
+                startY = (int) (size.height * 0.30);
+                startX = (size.width / 2);
+
+                startPoint.withCoordinates(startX, startY);
+                movePoint.withCoordinates(startX, endY);
+
+                new TouchAction((PerformsTouchActions) driver)
+                        .press(startPoint)
+                        .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(3)))
+                        .moveTo(movePoint)
+                        .release()
+                        .perform();
+                break;
+
+            case "DOWN":
+                startY = (int) (size.height * 0.80);
+                endY = (int) (size.height * 0.10);
+                startX = (size.width / 2);
+                startPoint.withCoordinates(startX, startY);
+                movePoint.withCoordinates(startX, endY);
+                new TouchAction((PerformsTouchActions) driver)
+                        .press(startPoint)
+                        .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(3)))
+                        .moveTo(movePoint)
+                        .release()
+                        .perform();
+
+                break;
+        }
+    }
+
+    public void waitList(List<WebElement> elements){
+        wait.until(ExpectedConditions.visibilityOfAllElements(elements));
+    }
+
 }

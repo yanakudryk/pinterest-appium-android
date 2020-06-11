@@ -5,12 +5,12 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 
-public class LoginScreen extends BaseScreen {
-    @AndroidFindBy(id = "com.discord:id/auth_login_email")
-    private AndroidElement email;
-    @AndroidFindBy(id = "com.discord:id/auth_login_password")
+public class LoginScreen extends BaseScreen{
+
+    @AndroidFindBy(id = "com.pinterest:id/password")
     private AndroidElement password;
-    @AndroidFindBy(id = "com.discord:id/auth_login")
+
+    @AndroidFindBy(id = "com.pinterest:id/login_bt")
     private AndroidElement loginButton;
 
     public LoginScreen(AndroidDriver<AndroidElement> driver) {
@@ -18,8 +18,7 @@ public class LoginScreen extends BaseScreen {
     }
 
     public void login(User user){
-        action.inputText(email, user.email());
-        action.inputText(password, user.password());
+        action.inputText(this.password, user.password());
         action.tapButton(loginButton);
     }
 }

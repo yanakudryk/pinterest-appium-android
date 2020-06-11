@@ -1,3 +1,4 @@
+import com.github.javafaker.Faker;
 import com.google.common.io.Files;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
@@ -16,18 +17,25 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class BaseTests {
     public static String accessKey = "jJzzxaR3GN2JCoLqEoQT";
     public static String userName = "yanakudryk3";
     public AndroidDriver<AndroidElement> driver;
+    public Faker usFaker;
+
     protected WelcomeScreen welcomeScreen;
-    protected RegisterScreen registerScreen;
-    protected CreateServerScreen createServerScreen;
+    protected SignUpScreen signUpScreen;
     protected LoginScreen loginScreen;
-    protected ChannelsMenu channelsMenu;
-    protected ChannelScreen channelScreen;
-    protected ShareLinkScreen shareLinkScreen;
+    protected MainScreen mainScreen;
+    protected CreateBoardScreen createBoardScreen;
+    protected EditProfileScreen editProfileScreen;
+    protected SavedScreen savedScreen;
+    protected SettingsScreen settingsScreen;
+
+
 
 
     @BeforeClass
@@ -35,12 +43,16 @@ public class BaseTests {
         driver = getEmulatorAndroidDriver();
         //driver = getBSAndroidDriver();
         welcomeScreen = new WelcomeScreen(driver);
-        registerScreen = new RegisterScreen(driver);
-        createServerScreen = new CreateServerScreen(driver);
+        signUpScreen = new SignUpScreen(driver);
         loginScreen = new LoginScreen(driver);
-        channelScreen = new ChannelScreen(driver);
-        channelsMenu = new ChannelsMenu(driver);
-        shareLinkScreen = new ShareLinkScreen(driver);
+        mainScreen = new MainScreen(driver);
+        createBoardScreen = new CreateBoardScreen(driver);
+        editProfileScreen = new EditProfileScreen(driver);
+        savedScreen = new SavedScreen(driver);
+        settingsScreen = new SettingsScreen(driver);
+
+        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+        usFaker = new Faker(new Locale("en-US"));
     }
 
     private AndroidDriver<AndroidElement> getBSAndroidDriver() throws MalformedURLException {
@@ -51,7 +63,7 @@ public class BaseTests {
         caps.setCapability("project", "My First Project");
         caps.setCapability("build", "My First Build");
         caps.setCapability("name", "Bstack-[Java] Sample Test");
-        caps.setCapability("app", "bs://9b764648509aec59489db7f3d18bd1fad2299123");
+        caps.setCapability("app", "bs://f654530288a029f94948961ab06cf5ed0877b397");
 
        return new AndroidDriver<AndroidElement>(new URL("https://"+userName+":"+accessKey+"@hub-cloud.browserstack.com/wd/hub"), caps);
     }
@@ -63,9 +75,9 @@ public class BaseTests {
         caps.setCapability("deviceName","Pixel 3 API 29");
         caps.setCapability("platformVersion","10.0");
         caps.setCapability("platformName", "Android");
-        caps.setCapability("appPackage", "com.discord");
-        caps.setCapability("appActivity", "com.discord.app.AppActivity$Main");
-        caps.setCapability("app","C:\\Users\\akade\\IdeaProjects\\messenger-android-automation\\apk\\com.discord_23.0_1146.apk");
+        caps.setCapability("app","C:\\Users\\akade\\IdeaProjects\\pinterest-android-automation\\apk\\com.pinterest_7.43.0_7438140.apk");
+        caps.setCapability("appPackage", "com.pinterest");
+        caps.setCapability("appActivity", "com.pinterest.activity.PinterestActivity");
         return new AndroidDriver<AndroidElement>(new URL("http://127.0.0.1:4723/wd/hub"), caps);
     }
 
