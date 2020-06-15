@@ -2,7 +2,11 @@ package screens;
 
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
+import io.appium.java_client.imagecomparison.OccurrenceMatchingResult;
 import io.appium.java_client.pagefactory.AndroidFindBy;
+
+import java.io.File;
+import java.io.IOException;
 
 public class EditProfileScreen extends BaseScreen {
     @AndroidFindBy(xpath = "//android.widget.ImageView[@resource-id='com.pinterest:id/edit_profile_avatar_view_picture']")
@@ -34,5 +38,14 @@ public class EditProfileScreen extends BaseScreen {
         action.tapButton(allowAccessToGallery);
         action.tapButton(folderPictures);
         action.tapButton(photo);
+    }
+
+    public OccurrenceMatchingResult getImageComparisonResults(File screenshot, File originalImage) throws IOException {
+        return action.compareImages(screenshot, originalImage);
+    }
+
+    public void makeProfileScreenshotName(String name) throws InterruptedException, IOException {
+        Thread.sleep(5000);
+        action.makeScreenshot(name);
     }
 }

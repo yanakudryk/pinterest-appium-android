@@ -1,33 +1,37 @@
 package utils;
 
+import com.google.common.io.Files;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.PerformsTouchActions;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
+import io.appium.java_client.imagecomparison.*;
 import io.appium.java_client.touch.LongPressOptions;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
 import org.apache.log4j.Logger;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.touch.TouchActions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
 public class ActionWithElements {
-    WebDriver driver;
+    AndroidDriver driver;
     Logger logger;
     WebDriverWait wait;
 
-    public ActionWithElements(WebDriver driver){
+    public ActionWithElements(AndroidDriver driver){
         this.driver = driver;
         wait = new WebDriverWait(this.driver, 30);
         logger = Logger.getLogger(getClass());
@@ -298,4 +302,25 @@ public class ActionWithElements {
         wait.until(ExpectedConditions.visibilityOfAllElements(elements));
     }
 
+    public OccurrenceMatchingResult compareImages(File screenshot, File originalImage) throws IOException {
+        /*FeaturesMatchingResult result = driver.
+                matchImagesFeatures(screenshot, originalImage, new FeaturesMatchingOptions()
+                        .withDetectorName(FeatureDetector.ORB)
+                        .withGoodMatchesFactor(40)
+                        .withMatchFunc(MatchingFunction.BRUTE_FORCE_HAMMING)
+                        .withEnabledVisualization());
+
+         */
+
+        OccurrenceMatchingResult result = driver
+                .findImageOccurrence(screenshot, originalImage, new OccurrenceMatchingOptions()
+                        .withEnabledVisualization());
+        return result;
+    }
+
+    public void makeScreenshot(String name) throws InterruptedException, IOException {
+
+        File screenshot = driver.getScreenshotAs(OutputType.FILE);
+        Files.move(screenshot, new File("out/screenshots/" + name + ".png"));
+    }
 }
